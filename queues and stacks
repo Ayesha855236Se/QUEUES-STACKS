@@ -1,0 +1,303 @@
+#include <iostream>
+using namespace std;
+class StackArray {
+	private:
+		int maxSize;
+		int* stackArray;
+		int top;
+	public:
+		StackArray(int size) : maxSize(size), top(-1) {
+			stackArray = new int[maxSize];
+		}
+		~StackArray() {
+			delete[] stackArray;
+		}
+		void push(int value) {
+			if (!isFull()) {
+				stackArray[++top] = value;
+				cout << "Pushed: " << value << endl;
+			} else {
+				cout << "Stack is full. Cannot push." << endl;
+			}
+		}
+		void pop() {
+			if (!isEmpty()) {
+				cout << "Popped: " << stackArray[top--] << endl;
+			} else {
+				cout << "Stack is empty. Cannot pop." << endl;
+			}
+		}
+		int peek() const {
+			if (!isEmpty()) {
+				return stackArray[top];
+			} else {
+				cout << "Stack is empty. Cannot peek." << endl;
+				return -1; // Assuming -1 is an invalid value
+			}
+		}
+		bool isEmpty() const {
+			return top == -1;
+		}
+		bool isFull() const {
+			return top == maxSize - 1;
+		}
+};
+class QueueArray {
+	private:
+		int maxSize;
+		int* queueArray;
+		int front, rear, currentSize;
+	public:
+		QueueArray(int size) : maxSize(size), front(0), rear(-1), currentSize(0) {
+			queueArray = new int[maxSize];
+		}
+		~QueueArray() {
+			delete[] queueArray;
+		}
+		void enqueue(int value) {
+			if (!isFull()) {
+				rear = (rear + 1) % maxSize;
+				queueArray[rear] = value;
+				currentSize++;
+				cout << "Enqueued: " << value << endl;
+			} else {
+				cout << "Queue is full. Cannot enqueue." << endl;
+			}
+		}
+		void dequeue() {
+			if (!isEmpty()) {
+				cout << "Dequeued: " << queueArray[front] << endl;
+				front = (front + 1) % maxSize;
+				currentSize--;
+			} else {
+				cout << "Queue is empty. Cannot dequeue." << endl;
+			}
+		}
+		int getFront() const {
+			if (!isEmpty()) {
+				return queueArray[front];
+			} else {
+				cout << "Queue is empty. Cannot get front." << endl;
+				return -1; // Assuming -1 is an invalid value
+			}
+		}
+		int getRear() const {
+			if (!isEmpty()) {
+				return queueArray[rear];
+			} else {
+				cout << "Queue is empty. Cannot get rear." << endl;
+				return -1; // Assuming -1 is an invalid value
+			}
+		}
+
+		bool isFull() const {
+			return currentSize == maxSize;
+		}
+
+		bool isEmpty() const {
+			return currentSize == 0;
+		}
+};
+class Node {
+	public:
+		int data;
+		Node* next;
+
+		Node(int value) : data(value), next(NULL) {}
+};
+class LinkedList {
+	private:
+		Node* head;
+	public:
+		LinkedList() : head(NULL) {}
+		~LinkedList() {
+			while (head) {
+				Node* temp = head;
+				head = head->next;
+				delete temp;
+			}
+		}
+		void insert(int value) {
+			Node* newNode = new Node(value);
+			newNode->next = head;
+			head = newNode;
+		}
+		void display() const {
+			Node* current = head;
+			while (current) {
+				cout << current->data << " ";
+				current = current->next;
+			}
+			cout << endl;
+		}
+		bool isEmpty() const {
+			return head == NULL;
+		}
+		Node* getHead() const {
+			return head;
+		}
+		void reverse() {
+			Node* prev = NULL;
+			Node* current = head;
+			Node* next = NULL;
+
+			while (current != NULL) {
+				next = current->next;
+				current->next = prev;
+				prev = current;
+				current = next;
+			}
+			head = prev;
+		}
+};
+class StackLinkedList {
+	private:
+		LinkedList linkedList;
+	public:
+		void push(int value) {
+			linkedList.insert(value);
+			cout << "Pushed: " << value << endl;
+		}
+		void pop() {
+			if (!linkedList.isEmpty()) {
+				Node* topNode = linkedList.getHead();
+				linkedList.reverse(); // Reverse to pop from the front
+				cout << "Popped: " << topNode->data << endl;
+				linkedList.reverse(); // Reverse again to restore the order
+			} else {
+				cout << "Stack is empty. Cannot pop." << endl;
+			}
+		}
+		int peek() const {
+			if (!linkedList.isEmpty()) {
+				return linkedList.getHead()->data;
+			} else {
+				cout << "Stack is empty. Cannot peek." << endl;
+				return -1; // Assuming -1 is an invalid value
+			}
+		}
+		bool isEmpty() const {
+			return linkedList.isEmpty();
+		}
+};
+int main() {
+	int stackSize, queueSize;
+	cout << "Enter the size of the stack: ";
+	cin >> stackSize;
+	StackArray stack(stackSize);
+	cout << "Enter the size of the queue: ";
+	cin >> queueSize;
+	QueueArray queue(queueSize);
+	int choice;
+	do {
+		cout << "\nChoose operation: \n";
+		cout << "1. Push to Stack\n2. Pop from Stack\n3. Peek Stack\n";
+		cout << "4. Enqueue to Queue\n5. Dequeue from Queue\n";
+		cout << "6. Get Front of Queue\n7. Get Rear of Queue\n";
+		cout << "0. Quit\n";
+		cout << "Enter choice: ";
+		cin >> choice;
+		switch (choice) {
+			case 1: {
+				int value;
+				cout << "Enter value to push: ";
+				cin >> value;
+				stack.push(value);
+				break;
+			}
+			case 2:
+				stack.pop();
+				break;
+			case 3:
+				cout << "Stack Peek: " << stack.peek() << endl;
+				break;
+			case 4: {
+				int value;
+				cout << "Enter value to enqueue: ";
+				cin >> value;
+				queue.enqueue(value);
+				break;
+			}
+			case 5:
+				queue.dequeue();
+				break;
+			case 6:
+				cout << "Queue Front: " << queue.getFront() << endl;
+				break;
+			case 7:
+				cout << "Queue Rear: " << queue.getRear() << endl;
+				break;
+			case 0:
+				cout << "Exiting program.\n";
+				break;
+			default:
+				cout << "Invalid choice. Please try again.\n";
+		}
+	} while (choice != 0);
+	int StackSize, QueueSize;
+	cout << "Enter the size of the stack: ";
+	cin >> stackSize;
+	StackLinkedList Stack;
+	cout << "Enter the size of the queue: ";
+	cin >> queueSize;
+	LinkedList linkedList;
+	int Choice;
+	do {
+		cout << "\nChoose operation: \n";
+		cout << "1. Push to Stack\n2. Pop from Stack\n3. Peek Stack\n";
+		cout << "4. Enqueue to Queue\n5. Dequeue from Queue\n";
+		cout << "6. Get Front of Queue\n7. Get Rear of Queue\n";
+		cout << "8. Insert into Linked List\n9. Display Linked List\n";
+		cout << "0. Quit\n";
+		cout << "Enter choice: ";
+		cin >> choice;
+		switch (choice) {
+			case 1: {
+				int value;
+				cout << "Enter value to push: ";
+				cin >> value;
+				stack.push(value);
+				break;
+			}
+			case 2:
+				stack.pop();
+				break;
+			case 3:
+				cout << "Stack Peek: " << stack.peek() << endl;
+				break;
+			case 4: {
+				int value;
+				cout << "Enter value to enqueue: ";
+				cin >> value;
+				queue.enqueue(value);
+				break;
+			}
+			case 5:
+				queue.dequeue();
+				break;
+			case 6:
+				cout << "Queue Front: " << queue.getFront() << endl;
+				break;
+			case 7:
+				cout << "Queue Rear: " << queue.getRear() << endl;
+				break;
+			case 8: {
+				int value;
+				cout << "Enter value to insert into Linked List: ";
+				cin >> value;
+				linkedList.insert(value);
+				break;
+			}
+			case 9:
+				cout << "Linked List: ";
+				linkedList.display();
+				break;
+			case 0:
+				cout << "Exiting program.\n";
+				break;
+			default:
+				cout << "Invalid choice. Please try again.\n";
+		}
+	} while (choice != 0);
+	return 0;
+}
